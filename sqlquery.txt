@@ -1,0 +1,49 @@
+SELECT 
+    order_id,
+    order_date,
+    status,
+    CASE 
+        WHEN status = 'Pending' AND DATEDIFF(CURDATE(), order_date) <= 7 THEN 'Pending Review'
+        WHEN status = 'Pending' AND DATEDIFF(CURDATE(), order_date) > 7 THEN 'Urgent Review'
+        WHEN status = 'Processing' AND DATEDIFF(CURDATE(), order_date) <= 10 THEN 'Processing'
+        WHEN status = 'Processing' AND DATEDIFF(CURDATE(), order_date) > 10 THEN 'Delayed'
+        WHEN status = 'Shipped' THEN 'Shipped'
+        WHEN status = 'Cancelled' THEN 'Cancelled'
+        ELSE 'Unknown' -- Catch-all for unexpected statuses
+    END AS status_group
+FROM orders;
+
+
+
+Explanation 
+
+pending review
+
+filters orders with status pending and placed within last 7 days 
+
+urgent review
+
+filters orders with status pending and placed within more thant 7 days 
+
+processing
+
+takes orders with status processing tht were placed with in 10 days
+dalayed 
+takes orders with status processing tht were placed morethan 10 days
+shipped 
+takes all orders status shipped 
+cancelled
+takes all orders status cancelled
+
+
+default 
+default case if any other unexpected statuses
+
+
+
+
+
+
+if order table containsmillionsof data datediff function on every row can cause an overhead
+
+creating 9ndexes on status column order date column speed up the execution 
